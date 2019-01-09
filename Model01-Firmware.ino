@@ -217,8 +217,8 @@ KEYMAPS(
     // Edit this keymap to make a custom layout
     [PRIMARY] = KEYMAP_STACKED(Key_LeftGui, Key_1, Key_2, Key_3, Key_4, Key_5, LSHIFT(Key_9),
                                Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_LeftBracket,
-                               Key_Insert, Key_A, Key_S, Key_D, Key_F, Key_G,
-                               Key_Backslash, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
+                               Key_Backslash, Key_A, Key_S, Key_D, Key_F, Key_G,
+                               OSM(LeftAlt), Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
                                OSM(LeftControl), Key_Tab, Key_Backspace, OSM(LeftShift),
                                ShiftToLayer(FUNCTION),
 
@@ -226,7 +226,7 @@ KEYMAPS(
                                Key_RightBracket, Key_Y, Key_U, Key_I, Key_O, Key_P, Key_Equals,
                                Key_H, Key_J, Key_K, Key_L, Key_Semicolon, Key_Quote,
                                LSHIFT(LALT(Key_LeftControl)), Key_N, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
-                               OSM(RightShift), OSM(LeftAlt), Key_Spacebar, OSM(RightControl),
+                               OSM(LeftShift), OSM(LeftAlt), Key_Spacebar, OSM(LeftControl),
                                ShiftToLayer(FUNCTION)),
 
 #else
@@ -235,14 +235,14 @@ KEYMAPS(
 
 #endif
 
-    [FUNCTION] = KEYMAP_STACKED(M(MACRO_VERSION_INFO), Key_F1, Key_F2, Key_F3, Key_F4, Key_F5, Key_LEDEffectNext,
+    [FUNCTION] = KEYMAP_STACKED(LSHIFT(Key_Delete), Key_F1, Key_F2, Key_F3, Key_F4, Key_F5, LCTRL(Key_Insert),
                                 ___, ___, ___, ___, ___, ___, Key_Home,
                                 ___, ___, ___, ___, ___, ___,
-                                ___, ___, ___, ___, ___, ___, Key_PageUp,
+                                Key_LEDEffectNext, ___, ___, ___, ___, ___, Key_PageUp,
                                 ___, Key_Enter, Key_Delete, Key_Spacebar,
                                 ___,
 
-                                ___, Key_F6, Key_F7, Key_F8, Key_F9, Key_F10, Key_F11,
+                                LSHIFT(Key_Insert), Key_F6, Key_F7, Key_F8, Key_F9, Key_F10, Key_F11,
                                 Key_End, Consumer_ScanPreviousTrack, Consumer_Stop, Consumer_PlaySlashPause, Consumer_ScanNextTrack, ___, Key_F12,
                                 Key_LeftArrow, Key_DownArrow, Key_UpArrow, Key_RightArrow, ___, ___,
                                 Key_PageDown, Consumer_Mute, Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___, ___, Consumer_Sleep,
