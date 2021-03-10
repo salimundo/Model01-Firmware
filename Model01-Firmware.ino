@@ -148,7 +148,7 @@ enum { PRIMARY, MAC, GAMING, FUNCTION }; // layers
 
 KEYMAPS(
 
-#elif defined(PRIMARY_KEYMAP_CUSTOM)
+#if defined(PRIMARY_KEYMAP_CUSTOM)
     [PRIMARY] = KEYMAP_STACKED(Key_LeftGui, Key_1, Key_2, Key_3, Key_4, Key_5, LSHIFT(Key_9),
                                Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_LeftBracket,
                                Key_Backslash, Key_A, Key_S, Key_D, Key_F, Key_G,
