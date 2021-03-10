@@ -21,9 +21,6 @@
 // Support for communicating with the host via a simple Serial protocol
 #include "Kaleidoscope-FocusSerial.h"
 
-// Support for keys that move the mouse
-#include "Kaleidoscope-MouseKeys.h"
-
 // Support for macros
 #include "Kaleidoscope-Macros.h"
 
@@ -37,23 +34,14 @@
 // Support for LED modes that set all LEDs to a single color
 #include "Kaleidoscope-LEDEffect-SolidColor.h"
 
-// Support for an LED mode that makes all the LEDs 'breathe'
-#include "Kaleidoscope-LEDEffect-Breathe.h"
+// Support for shared palettes for other plugins, like Colormap below
+#include "Kaleidoscope-LED-Palette-Theme.h"
 
-// Support for an LED mode that makes a red pixel chase a blue pixel across the keyboard
-#include "Kaleidoscope-LEDEffect-Chase.h"
-
-// Support for LED modes that pulse the keyboard's LED in a rainbow pattern
-#include "Kaleidoscope-LEDEffect-Rainbow.h"
-
-// Support for an LED mode that lights up the keys as you press them
-#include "Kaleidoscope-LED-Stalker.h"
-
-// Support for an LED mode that prints the keys you press in letters 4px high
-#include "Kaleidoscope-LED-AlphaSquare.h"
+// Support for an LED mode that lets one configure per-layer color maps
+#include "Kaleidoscope-Colormap.h"
 
 // Support for Keyboardio's internal keyboard testing mode
-#include "Kaleidoscope-Model01-TestMode.h"
+#include "Kaleidoscope-HardwareTestMode.h"
 
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
@@ -84,7 +72,7 @@
 
 enum
 {
-    MACRO_VERSION_INFO
+  MACRO_VERSION_INFO
 };
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
@@ -137,8 +125,10 @@ enum
 
 enum
 {
-    PRIMARY,
-    FUNCTION
+  PRIMARY,
+  MAC,
+  GAMING,
+  FUNCTION
 }; // layers
 
 /**
@@ -154,9 +144,6 @@ enum
   *
   */
 
-// #define PRIMARY_KEYMAP_QWERTY
-// #define PRIMARY_KEYMAP_COLEMAK
-// #define PRIMARY_KEYMAP_DVORAK
 #define PRIMARY_KEYMAP_CUSTOM
 
 /* This comment temporarily turns off astyle's indent enforcement
@@ -165,53 +152,6 @@ enum
 // *INDENT-OFF*
 
 KEYMAPS(
-
-#if defined(PRIMARY_KEYMAP_QWERTY)
-    [PRIMARY] = KEYMAP_STACKED(___, Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
-                               Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
-                               Key_PageUp, Key_A, Key_S, Key_D, Key_F, Key_G,
-                               Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
-                               Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-                               ShiftToLayer(FUNCTION),
-
-                               M(MACRO_ANY), Key_6, Key_7, Key_8, Key_9, Key_0, ___ //change,
-                                                                                    Key_Enter,
-                               Key_Y, Key_U, Key_I, Key_O, Key_P, Key_Equals,
-                               Key_H, Key_J, Key_K, Key_L, Key_Semicolon, Key_Quote,
-                               Key_RightAlt, Key_N, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
-                               Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
-                               ShiftToLayer(FUNCTION)),
-
-#elif defined(PRIMARY_KEYMAP_DVORAK)
-
-    [PRIMARY] = KEYMAP_STACKED(___, Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
-                               Key_Backtick, Key_Quote, Key_Comma, Key_Period, Key_P, Key_Y, Key_Tab,
-                               Key_PageUp, Key_A, Key_O, Key_E, Key_U, Key_I,
-                               Key_PageDown, Key_Semicolon, Key_Q, Key_J, Key_K, Key_X, Key_Escape,
-                               Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-                               ShiftToLayer(FUNCTION),
-
-                               M(MACRO_ANY), Key_6, Key_7, Key_8, Key_9, Key_0, ___,
-                               Key_Enter, Key_F, Key_G, Key_C, Key_R, Key_L, Key_Slash,
-                               Key_D, Key_H, Key_T, Key_N, Key_S, Key_Minus,
-                               Key_RightAlt, Key_B, Key_M, Key_W, Key_V, Key_Z, Key_Equals,
-                               Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
-                               ShiftToLayer(FUNCTION)),
-
-#elif defined(PRIMARY_KEYMAP_COLEMAK)
-
-    [PRIMARY] = KEYMAP_STACKED(___, Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
-                               Key_Backtick, Key_Q, Key_W, Key_F, Key_P, Key_G, Key_Tab,
-                               Key_PageUp, Key_A, Key_R, Key_S, Key_T, Key_D,
-                               Key_PageDown, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
-                               Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
-                               ShiftToLayer(FUNCTION),
-
-                               M(MACRO_ANY), Key_6, Key_7, Key_8, Key_9, Key_0, ___ Key_Enter, Key_J, Key_L, Key_U, Key_Y, Key_Semicolon, Key_Equals,
-                               Key_H, Key_N, Key_E, Key_I, Key_O, Key_Quote,
-                               Key_RightAlt, Key_K, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
-                               Key_RightShift, Key_LeftAlt, Key_Spacebar, Key_RightControl,
-                               ShiftToLayer(FUNCTION)),
 
 #elif defined(PRIMARY_KEYMAP_CUSTOM)
     // Edit this keymap to make a custom layout
@@ -222,10 +162,10 @@ KEYMAPS(
                                OSM(LeftControl), Key_Tab, Key_Backspace, OSM(LeftShift),
                                ShiftToLayer(FUNCTION),
 
-                               LSHIFT(Key_0), Key_6, Key_7, Key_8, Key_9, Key_0, LSHIFT(Key_F5),
+                               LSHIFT(Key_0), Key_6, Key_7, Key_8, Key_9, Key_0, LCTRL(Key_F5),
                                Key_RightBracket, Key_Y, Key_U, Key_I, Key_O, Key_P, Key_Equals,
                                Key_H, Key_J, Key_K, Key_L, Key_Semicolon, Key_Quote,
-                               LSHIFT(LALT(Key_LeftControl)), Key_N, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
+                               LSHIFT(LALT(LCTRL(Key_LeftGui))), Key_N, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
                                OSM(LeftShift), OSM(LeftAlt), Key_Spacebar, OSM(LeftControl),
                                ShiftToLayer(FUNCTION)),
 
@@ -235,9 +175,37 @@ KEYMAPS(
 
 #endif
 
+    [MAC] = KEYMAP_STACKED(OSM(LeftControl), Key_1, Key_2, Key_3, Key_4, Key_5, LSHIFT(Key_9),
+                           Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_LeftBracket,
+                           Key_Backslash, Key_A, Key_S, Key_D, Key_F, Key_G,
+                           OSM(LeftAlt), Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
+                           OSM(LeftGui), Key_Tab, Key_Backspace, OSM(LeftShift),
+                           ShiftToLayer(FUNCTION),
+
+                           LSHIFT(Key_0), Key_6, Key_7, Key_8, Key_9, Key_0, LGUI(LSHIFT(Key_R)),
+                           Key_RightBracket, Key_Y, Key_U, Key_I, Key_O, Key_P, Key_Equals,
+                           Key_H, Key_J, Key_K, Key_L, Key_Semicolon, Key_Quote,
+                           LSHIFT(LALT(LCTRL(Key_LeftGui))), Key_N, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
+                           OSM(LeftShift), OSM(LeftAlt), Key_Spacebar, OSM(LeftGui),
+                           ShiftToLayer(FUNCTION)),
+
+    [GAMING] = KEYMAP_STACKED(Key_LeftGui, Key_1, Key_2, Key_3, Key_4, Key_5, LCTRL(Key_9),
+                              Key_Backtick, Key_Q, Key_W, Key_E, Key_R, Key_T, Key_LeftBracket,
+                              Key_Backslash, Key_A, Key_S, Key_D, Key_F, Key_G,
+                              Key_LeftAlt, Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Escape,
+                              Key_LeftControl, Key_Tab, Key_Backspace, Key_LeftShift,
+                              ShiftToLayer(FUNCTION),
+
+                              LSHIFT(Key_0), Key_6, Key_7, Key_8, Key_9, Key_0, LCTRL(Key_F5),
+                              Key_RightBracket, Key_Y, Key_U, Key_I, Key_O, Key_P, Key_Equals,
+                              Key_H, Key_J, Key_K, Key_L, Key_Semicolon, Key_Quote,
+                              LSHIFT(LALT(LCTRL(Key_LeftGui))), Key_N, Key_M, Key_Comma, Key_Period, Key_Slash, Key_Minus,
+                              Key_LeftShift, Key_LeftAlt, Key_Spacebar, Key_LeftControl,
+                              ShiftToLayer(FUNCTION)),
+
     [FUNCTION] = KEYMAP_STACKED(LSHIFT(Key_Delete), Key_F1, Key_F2, Key_F3, Key_F4, Key_F5, LCTRL(Key_Insert),
                                 ___, ___, ___, ___, ___, ___, Key_Home,
-                                ___, ___, ___, ___, ___, ___,
+                                ___, LockLayer(MAC), ___, ___, ___, LockLayer(GAMING),
                                 Key_LEDEffectNext, ___, ___, ___, ___, ___, Key_PageUp,
                                 ___, Key_Enter, Key_Delete, Key_Spacebar,
                                 ___,
@@ -245,7 +213,7 @@ KEYMAPS(
                                 LSHIFT(Key_Insert), Key_F6, Key_F7, Key_F8, Key_F9, Key_F10, Key_F11,
                                 Key_End, Consumer_ScanPreviousTrack, Consumer_Stop, Consumer_PlaySlashPause, Consumer_ScanNextTrack, ___, Key_F12,
                                 Key_LeftArrow, Key_DownArrow, Key_UpArrow, Key_RightArrow, ___, ___,
-                                Key_PageDown, Consumer_Mute, Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___, ___, Consumer_Sleep,
+                                Key_PageDown, Consumer_Mute, Consumer_VolumeDecrement, Consumer_VolumeIncrement, ___, ___, System_Sleep,
                                 Key_CapsLock, Key_PcApplication, Key_Enter, ___,
                                 ___))
 
@@ -259,11 +227,11 @@ KEYMAPS(
 
 static void versionInfoMacro(uint8_t keyState)
 {
-    if (keyToggledOn(keyState))
-    {
-        Macros.type(PSTR("Keyboardio Model 01 - Kaleidoscope "));
-        Macros.type(PSTR(BUILD_INFORMATION));
-    }
+  if (keyToggledOn(keyState))
+  {
+    Macros.type(PSTR("Keyboardio Model 01 - Kaleidoscope "));
+    Macros.type(PSTR(BUILD_INFORMATION));
+  }
 }
 
 /** macroAction dispatches keymap events that are tied to a macro
@@ -280,56 +248,46 @@ static void versionInfoMacro(uint8_t keyState)
 
 const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState)
 {
-    switch (macroIndex)
-    {
+  switch (macroIndex)
+  {
 
-    case MACRO_VERSION_INFO:
-        versionInfoMacro(keyState);
-        break;
-    }
-    return MACRO_NONE;
+  case MACRO_VERSION_INFO:
+    versionInfoMacro(keyState);
+    break;
+  }
+  return MACRO_NONE;
 }
 
-// These 'solid' color effect definitions define a rainbow of
-// LED color modes calibrated to draw 500mA or less on the
-// Keyboardio Model 01.
-
-static kaleidoscope::LEDSolidColor solidRed(160, 0, 0);
-static kaleidoscope::LEDSolidColor solidOrange(140, 70, 0);
-static kaleidoscope::LEDSolidColor solidYellow(130, 100, 0);
-static kaleidoscope::LEDSolidColor solidGreen(0, 160, 0);
-static kaleidoscope::LEDSolidColor solidBlue(0, 70, 130);
-static kaleidoscope::LEDSolidColor solidIndigo(0, 0, 170);
-static kaleidoscope::LEDSolidColor solidViolet(130, 0, 120);
+static kaleidoscope::plugin::LEDSolidColor solidBlue(0, 70, 130);
 
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
  */
-void toggleLedsOnSuspendResume(kaleidoscope::HostPowerManagement::Event event)
+void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event event)
 {
-    switch (event)
-    {
-    case kaleidoscope::HostPowerManagement::Suspend:
-        LEDControl.paused = true;
-        LEDControl.set_all_leds_to({0, 0, 0});
-        LEDControl.syncLeds();
-        break;
-    case kaleidoscope::HostPowerManagement::Resume:
-        LEDControl.paused = false;
-        LEDControl.refreshAll();
-        break;
-    case kaleidoscope::HostPowerManagement::Sleep:
-        break;
-    }
+  switch (event)
+  {
+  case kaleidoscope::plugin::HostPowerManagement::Suspend:
+    LEDControl.set_all_leds_to({0, 0, 0});
+    LEDControl.syncLeds();
+    LEDControl.paused = true;
+    break;
+  case kaleidoscope::plugin::HostPowerManagement::Resume:
+    LEDControl.paused = false;
+    LEDControl.refreshAll();
+    break;
+  case kaleidoscope::plugin::HostPowerManagement::Sleep:
+    break;
+  }
 }
 
 /** hostPowerManagementEventHandler dispatches power management events (suspend,
  * resume, and sleep) to other functions that perform action based on these
  * events.
  */
-void hostPowerManagementEventHandler(kaleidoscope::HostPowerManagement::Event event)
+void hostPowerManagementEventHandler(kaleidoscope::plugin::HostPowerManagement::Event event)
 {
-    toggleLedsOnSuspendResume(event);
+  toggleLedsOnSuspendResume(event);
 }
 
 /** This 'enum' is a list of all the magic combos used by the Model 01's
@@ -341,18 +299,30 @@ void hostPowerManagementEventHandler(kaleidoscope::HostPowerManagement::Event ev
  */
 enum
 {
-    // Toggle between Boot (6-key rollover; for BIOSes and early boot) and NKRO
-    // mode.
-    COMBO_TOGGLE_NKRO_MODE
+  // Toggle between Boot (6-key rollover; for BIOSes and early boot) and NKRO
+  // mode.
+  COMBO_TOGGLE_NKRO_MODE,
+  // Enter test mode
+  COMBO_ENTER_TEST_MODE
 };
 
-/** A tiny wrapper, to be used by MagicCombo.
+/** Wrappers, to be used by MagicCombo. **/
+
+/**
  * This simply toggles the keyboard protocol via USBQuirks, and wraps it within
  * a function with an unused argument, to match what MagicCombo expects.
  */
 static void toggleKeyboardProtocol(uint8_t combo_index)
 {
-    USBQuirks.toggleKeyboardProtocol();
+  USBQuirks.toggleKeyboardProtocol();
+}
+
+/**
+ *  This enters the hardware test mode
+ */
+static void enterHardwareTestMode(uint8_t combo_index)
+{
+  HardwareTestMode.runTests();
 }
 
 /** Magic combo list, a list of key combo and action pairs the firmware should
@@ -360,7 +330,10 @@ static void toggleKeyboardProtocol(uint8_t combo_index)
  */
 USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
                   // Left Fn + Esc + Shift
-                  .keys = {R3C6, R2C6, R3C7}});
+                  .keys = {R3C6, R2C6, R3C7}},
+                 {.action = enterHardwareTestMode,
+                  // Left Fn + Prog + LED
+                  .keys = {R3C6, R0C0, R0C6}});
 
 // First, tell Kaleidoscope which plugins you want to use.
 // The order can be important. For example, LED effects are
@@ -390,7 +363,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
 
     // The hardware test mode, which can be invoked by tapping Prog, LED and the
     // left Fn button at the same time.
-    TestMode,
+    HardwareTestMode,
 
     // LEDControl provides support for other LED modes
     LEDControl,
@@ -399,22 +372,15 @@ KALEIDOSCOPE_INIT_PLUGINS(
     solidBlue,
     LEDOff,
 
-    // The rainbow effect changes the color of all of the keyboard's keys at the same time
-    // running through all the colors of the rainbow.
-    LEDRainbowEffect,
+    // The LED Palette Theme plugin provides a shared palette for other plugins,
+    // like Colormap below
+    LEDPaletteTheme,
 
-    // The rainbow wave effect lights up your keyboard with all the colors of a rainbow
-    // and slowly moves the rainbow across your keyboard
-    LEDRainbowWaveEffect,
-
-    // These static effects turn your keyboard's LEDs a variety of colors
-    solidRed, solidOrange, solidYellow, solidGreen, solidIndigo, solidViolet,
+    // The Colormap effect makes it possible to set up per-layer colormaps
+    ColormapEffect,
 
     // The macros plugin adds support for macros
     Macros,
-
-    // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
-    MouseKeys,
 
     // The HostPowerManagement plugin allows us to turn LEDs off when then host
     // goes to sleep, and resume them when it wakes up.
@@ -442,27 +408,31 @@ KALEIDOSCOPE_INIT_PLUGINS(
  */
 void setup()
 {
-    // First, call Kaleidoscope's internal setup function
-    Kaleidoscope.setup();
+  // First, call Kaleidoscope's internal setup function
+  Kaleidoscope.setup();
 
-    // We set the brightness of the rainbow effects to 150 (on a scale of 0-255)
-    // This draws more than 500mA, but looks much nicer than a dimmer effect
-    LEDRainbowEffect.brightness(150);
-    LEDRainbowWaveEffect.brightness(150);
+  // Set the action key the test mode should listen for to Left Fn
+  HardwareTestMode.setActionKey(R3C6);
 
-    // We want to make sure that the firmware starts with LED effects off
-    // This avoids over-taxing devices that don't have a lot of power to share
-    // with USB devices
-    solidBlue.activate();
+  // We want to make sure that the firmware starts with LED effects off
+  // This avoids over-taxing devices that don't have a lot of power to share
+  // with USB devices
+  solidBlue.activate();
 
-    // To make the keymap editable without flashing new firmware, we store
-    // additional layers in EEPROM. For now, we reserve space for five layers. If
-    // one wants to use these layers, just set the default layer to one in EEPROM,
-    // by using the `settings.defaultLayer` Focus command.
-    EEPROMKeymap.setup(5, EEPROMKeymap.Mode::EXTEND);
+  // To make the keymap editable without flashing new firmware, we store
+  // additional layers in EEPROM. For now, we reserve space for five layers. If
+  // one wants to use these layers, just set the default layer to one in EEPROM,
+  // by using the `settings.defaultLayer` Focus command, or by using the
+  // `keymap.onlyCustom` command to use EEPROM layers only.
+  EEPROMKeymap.setup(5);
 
-    // Mine
-    ActiveModColorEffect.highlight_color = CRGB(0x00, 0xff, 0xff);
+  // We need to tell the Colormap plugin how many layers we want to have custom
+  // maps for. To make things simple, we set it to five layers, which is how
+  // many editable layers we have (see above).
+  ColormapEffect.max_layers(5);
+
+  // Mine
+  ActiveModColorEffect.highlight_color = CRGB(0x00, 0xff, 0xff);
 }
 
 /** loop is the second of the standard Arduino sketch functions.
@@ -474,5 +444,5 @@ void setup()
 
 void loop()
 {
-    Kaleidoscope.loop();
+  Kaleidoscope.loop();
 }
